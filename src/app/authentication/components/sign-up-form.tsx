@@ -1,8 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { toast } from "sonner";
+import z, { set } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/db/auth-client";
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -29,9 +32,7 @@ const formSchema = z
   .object({
     name: z.string().trim().min(1, "Please enter your name"),
     email: z.email("Please enter a valid email address"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters long"),
+    password: z.string().min(8, "Password must be at least 8 characters long"),
     passwordConfirmation: z.string().min(1, "Please confirm your password"),
   })
   .refine(
@@ -45,6 +46,7 @@ const formSchema = z
   );
 
 const SignUpForm = () => {
+  const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,12 +56,29 @@ const SignUpForm = () => {
       passwordConfirmation: "",
     },
   });
-  
-  function onSubmit(values: FormValues) {
-    console.log("Valid form submitted:");
-    console.log(values);
+
+  async function onSubmit(values: FormValues) {
+    await authClient.signUp.email({
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (error) => {
+          if (error.error.code === "USER_ALREADY_EXISTS") {
+            toast.error("An account with this email already exists.");
+            form.setError("email", {
+              message: "An account with this email already exists.",
+            });
+          }
+          toast.error(error.error.message);
+        },
+      },
+    });
   }
-  
+
   return (
     <>
       <Card>
