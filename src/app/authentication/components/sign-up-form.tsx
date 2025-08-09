@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import z, { set } from "zod";
+import z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -69,7 +69,7 @@ const SignUpForm = () => {
         onError: (error) => {
           if (error.error.code === "USER_ALREADY_EXISTS") {
             toast.error("An account with this email already exists.");
-            form.setError("email", {
+            return form.setError("email", {
               message: "An account with this email already exists.",
             });
           }
