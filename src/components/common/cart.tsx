@@ -7,11 +7,17 @@ import { formatCentsToUSD } from "@/helpers/money";
 
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
 import CartItem from "./cart-item";
 
 export const Cart = () => {
-    const { data: cart, isPending: cartIsLoading } = useQuery({
+  const { data: cart, isPending: cartIsLoading } = useQuery({
     queryKey: ["cart"],
     queryFn: () => getCart(),
   });
@@ -35,6 +41,7 @@ export const Cart = () => {
                     key={item.id}
                     id={item.id}
                     productName={item.productVariant.product.name}
+                    productVariantId={item.productVariant.id}
                     productVariantName={item.productVariant.name}
                     productVariantImageUrl={item.productVariant.imageUrl}
                     productVariantPriceInCents={
