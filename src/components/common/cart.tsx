@@ -4,6 +4,7 @@ import { ShoppingBasketIcon } from "lucide-react";
 import { getCart } from "@/actions/get-cart";
 import { Button } from "@/components/ui/button";
 import { formatCentsToUSD } from "@/helpers/money";
+import { useCart } from "@/hooks/queries/use-cart";
 
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
@@ -17,10 +18,8 @@ import {
 import CartItem from "./cart-item";
 
 export const Cart = () => {
-  const { data: cart, isPending: cartIsLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: () => getCart(),
-  });
+  const { data: cart } = useCart();
+
   return (
     <Sheet>
       <SheetTrigger asChild>
